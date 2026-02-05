@@ -51,6 +51,8 @@ function Board({ xIsNext, squares, onPlay }) { //최상위 컴포넌트 변경 (
     let status;
     if(winner) {
         status = "Winner: " + winner;
+    } else if (!squares.includes(null)) {
+        status = "Draw!";
     } else {
         status = "Next player: " + (xIsNext ? "X" : "O");
     }
@@ -125,6 +127,12 @@ export default function Game() { //전체 게임 기록 저장
         // setXIsNext(nextMove % 2 === 0);
     }
 
+    //게임 초기화
+    function resetGame() {
+        setHistory([Array(9).fill(null)]);
+        setCurrentMove(0);
+    }
+
     //이동 내역 렌더링
     const moves = history.map((squares, move) => {
        let description;
@@ -141,12 +149,17 @@ export default function Game() { //전체 게임 기록 저장
        );
     });
 
+    const winner = calculateWinner(currentSquares);
+    const isDraw = !currentSquares.includes(null) && !winner;
+    const isFinished = winner || isDraw;
+
     return (
       <div className="game">
         <div className="game-board">
             <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
         </div>
         <div className="game-info">
+            {isFinished && <button onClick={resetGame}>reload</button>}
             <ol>{moves}</ol>
         </div>
       </div>
